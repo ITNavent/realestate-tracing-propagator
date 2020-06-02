@@ -10,6 +10,10 @@ public class B3HeadersInterceptor extends HandlerInterceptorAdapter {
 
 	private B3HeadersService service;
 
+	public B3HeadersInterceptor() {
+		service = new B3HeadersService();
+	}
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
     	service.fillMDC(request, MDC.getMDCAdapter());
