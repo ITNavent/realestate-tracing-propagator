@@ -13,7 +13,7 @@ public class B3HeadersPropagator implements RequestInterceptor {
 	public void apply(RequestTemplate template) {
 		for (int i = 0; i < B3Header.values().length; i++) {
         	String b3Header = B3Header.values()[i].getName();
-        	Optional.of(MDC.get(b3Header)).ifPresent(v -> template.header(b3Header, v));			
+        	Optional.ofNullable(MDC.get(b3Header)).ifPresent(v -> template.header(b3Header, v));
 		}
 	}
 }

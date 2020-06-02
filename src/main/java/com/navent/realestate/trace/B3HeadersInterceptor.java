@@ -14,7 +14,7 @@ public class B3HeadersInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         for (int i = 0; i < B3Header.values().length; i++) {
         	String b3Header = B3Header.values()[i].getName();
-        	Optional.of(request.getHeader(b3Header)).ifPresent(h -> MDC.put(b3Header, h));			
+        	Optional.ofNullable(request.getHeader(b3Header)).ifPresent(h -> MDC.put(b3Header, h));
 		}
         return super.preHandle(request, response, handler);
     }
