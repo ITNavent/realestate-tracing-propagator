@@ -23,6 +23,6 @@ public class B3HeadersInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         super.afterCompletion(request, response, handler, ex);
-        service.cleanMDC(request, MDC.getMDCAdapter());
+        service.cleanMDC(MDC.getMDCAdapter());
     }
 }
