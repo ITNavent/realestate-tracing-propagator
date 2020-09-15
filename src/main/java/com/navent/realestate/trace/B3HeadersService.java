@@ -1,5 +1,7 @@
 package com.navent.realestate.trace;
 
+import com.newrelic.api.agent.NewRelic;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.spi.MDCAdapter;
@@ -19,24 +21,29 @@ public class B3HeadersService {
 
     public void fillMDC(HttpServletRequest request, MDCAdapter mdc) {
     	log.debug("MDC before fill {} ", mdc.getCopyOfContextMap());
-        for (int i = 0; i < B3Header.values().length; i++) {
-        	String b3Header = B3Header.values()[i].getName();
-        	Optional.ofNullable(request.getHeader(b3Header)).ifPresent(h -> mdc.put(b3Header, h));
+        for (int i = 0; i < TracingHeader.values().length; i++) {
+        	TracingHeader tracingHeader = TracingHeader.values()[i];
+        	Optional.ofNullable(request.getHeader(tracingHeader.getName())).ifPresent(h -> {
+        		mdc.put(tracingHeader.getName(), h);
+        		if(tracingHeader.isSendToNewrelic()) {
+        			NewRelic.addCustomParameter(tracingHeader.getName(), h);
+        		}
+        	});
 		}
         log.debug("MDC after fill {} ", mdc.getCopyOfContextMap());
     }
 
     public void cleanMDC(MDCAdapter mdc) {
-        for (int i = 0; i < B3Header.values().length; i++) {
-        	String b3Header = B3Header.values()[i].getName();
+        for (int i = 0; i < TracingHeader.values().length; i++) {
+        	String b3Header = TracingHeader.values()[i].getName();
         	mdc.remove(b3Header);
 		}
     }
 
     public Map<String, String> mdcHeadersToMap(MDCAdapter mdc) {
-    	Map<String, String> headers = new HashMap<String, String>(B3Header.values().length);
-    	for (int i = 0; i < B3Header.values().length; i++) {
-        	String b3Header = B3Header.values()[i].getName();
+    	Map<String, String> headers = new HashMap<String, String>(TracingHeader.values().length);
+    	for (int i = 0; i < TracingHeader.values().length; i++) {
+        	String b3Header = TracingHeader.values()[i].getName();
         	Optional.ofNullable(mdc.get(b3Header)).ifPresent(v -> headers.put(b3Header, v));
     	}
     	log.debug("MDC headers map {} ", headers);
@@ -44,9 +51,9 @@ public class B3HeadersService {
     }
 
     public MultiValueMap<String, String> mdcHeadersToMultiValueMap(MDCAdapter mdc) {
-    	MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(B3Header.values().length);
-    	for (int i = 0; i < B3Header.values().length; i++) {
-        	String b3Header = B3Header.values()[i].getName();
+    	MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(TracingHeader.values().length);
+    	for (int i = 0; i < TracingHeader.values().length; i++) {
+        	String b3Header = TracingHeader.values()[i].getName();
         	Optional.ofNullable(mdc.get(b3Header)).ifPresent(v -> headers.put(b3Header, Arrays.asList(v)));
     	}
     	log.debug("MDC headers map {} ", headers);

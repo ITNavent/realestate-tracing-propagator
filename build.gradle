@@ -29,6 +29,7 @@ dependencies {
 	implementation 'org.springframework:spring-webmvc:4.3.12.RELEASE'
 	implementation 'io.github.openfeign:feign-core:9.5.0'
 	implementation 'org.apache.httpcomponents:httpclient:4.5.12'
+	implementation 'com.newrelic.agent.java:newrelic-api:6.0.0'
 }
 
 //https://github.com/researchgate/gradle-release
